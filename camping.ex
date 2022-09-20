@@ -31,13 +31,16 @@ defmodule Khf1 do
 
     row_tent_counts = first_items_of_arrays(tl(rows))
     col_tent_counts = hd(rows)
-    tent_coordinates = get_tent_coordinates(rows)
+    tree_coordinates = get_tree_coordinates(rows)
 
-    {row_tent_counts, col_tent_counts, tent_coordinates}
+    {row_tent_counts, col_tent_counts, tree_coordinates}
   end
 
-  @spec parse_file(file :: String.t()) :: [[any]]
-  # Parse the file content to an array of rows
+  @type parsed_field_row :: [integer | [String]]
+  @type parsed_file_content :: [[integer] | [parsed_field_row]]
+
+  @spec parse_file(file :: String.t()) :: parsed :: parsed_file_content
+  # parsed is the file content represented as an array of arrays where the numbers are converted to integers
   defp parse_file(file) do
     lines = File.read!(file) |> String.split(~r/\R/, trim: true)
     # [" 0  1 2     ", "0  - *  - ", "-1 *    -  *"]
@@ -62,15 +65,13 @@ defmodule Khf1 do
     [parsed_first_row | parsed_other_rows]
   end
 
-  @spec first_items_of_arrays(arrays :: [[any]]) :: [any]
-  # Collect the first items of the arrays and put them into another array
-  defp first_items_of_arrays(arrays) do
-    for i <- 0..(length(arrays) - 1), do: Enum.at(Enum.at(arrays, i), 0)
-  end
+  @spec first_items_of_arrays(arrays :: [[any]]) :: first_items :: [any]
+  # Collect the first items of the arrays and put them into the first_items array
+  defp first_items_of_arrays(arrays), do: Enum.map(arrays, &hd/1)
 
-  @spec get_tent_coordinates(rows :: [[any]]) :: [field]
-  # Get the coordinates of the tents from the rows
-  defp get_tent_coordinates(rows) do
+  @spec get_tree_coordinates(rows :: parsed_file_content) :: coordinates :: [field]
+  # Get the coordinates of the trees from the rows and put them into the coordinates array
+  defp get_tree_coordinates(rows) do
     n = length(rows) - 1
     m = length(hd(rows))
 
