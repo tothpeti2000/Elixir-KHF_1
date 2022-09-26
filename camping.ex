@@ -75,9 +75,6 @@ defmodule Khf1 do
     n = length(rows) - 1
     m = length(hd(rows))
 
-    for i <- 1..n, j <- 1..m do
-      if Enum.at(Enum.at(rows, i), j) == "*", do: {i, j}
-    end
-    |> Enum.filter(&(!is_nil(&1)))
+    for i <- 1..n, j <- 1..m, Enum.at(Enum.at(rows, i), j) == "*", do: {i, j}
   end
 end
